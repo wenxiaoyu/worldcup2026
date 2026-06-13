@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Team } from '../data/teams'
 import { Match, namesMatch, toBeijingDateTime, adjustDate } from '../services/matchData'
+import ApiKeyInput from './ApiKeyInput'
 
 interface Props {
   teamA: Team | null
@@ -9,11 +10,13 @@ interface Props {
   selectedMatch: Match | null
   odds: { home: string; draw: string; away: string }
   onOddsChange: (field: 'home' | 'draw' | 'away', value: string) => void
+  apiKey: string
+  onApiKeyChange: (key: string) => void
   onPredict: () => void
   onGoToSchedule: () => void
 }
 
-export default function TeamSelector({ teamA, teamB, nextMatch, selectedMatch, odds, onOddsChange, onPredict, onGoToSchedule }: Props) {
+export default function TeamSelector({ teamA, teamB, nextMatch, selectedMatch, odds, onOddsChange, apiKey, onApiKeyChange, onPredict, onGoToSchedule }: Props) {
   const isNextMatch = !!(nextMatch && teamA && teamB && (
     (namesMatch(teamA.nameEn, nextMatch.team1) && namesMatch(teamB.nameEn, nextMatch.team2)) ||
     (namesMatch(teamA.nameEn, nextMatch.team2) && namesMatch(teamB.nameEn, nextMatch.team1))
@@ -124,6 +127,8 @@ export default function TeamSelector({ teamA, teamB, nextMatch, selectedMatch, o
           ))}
         </div>
       </motion.div>
+
+      <ApiKeyInput apiKey={apiKey} onApiKeyChange={onApiKeyChange} />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}

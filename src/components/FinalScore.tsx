@@ -8,8 +8,6 @@ interface Props {
   result: CompositeResult
 }
 
-const LABELS = ['第一推演', '第二推演', '第三推演']
-
 export default function FinalScore({ teamA, teamB, result }: Props) {
   const scores = result.predictedScores
 
@@ -84,9 +82,11 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.0 }}
       >
-        <div className="text-xs text-gray-500 mb-3 tracking-wide">天机三式 · 比分推演</div>
+        <div className="text-xs text-gray-500 mb-3 tracking-wide">{result.llmScores?.length ? '玄学 · AI 联合推演' : '天机三式 · 比分推演'}</div>
         <div className="grid grid-cols-3 gap-3">
-          {scores.map((score, i) => (
+          {scores.map((score, i) => {
+            const label = i === 0 ? '玄学推演' : (result.llmScores?.length && i <= (result.llmScores.length) ? 'AI 推演' : '玄学推演')
+            return (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -99,9 +99,9 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
               }`}
             >
               <div className={`text-[10px] mb-2 font-medium ${
-                i === 0 ? 'text-gold-400' : 'text-gray-500'
+                i === 0 ? 'text-gold-400' : label === 'AI 推演' ? 'text-nebula-400' : 'text-gray-500'
               }`}>
-                {LABELS[i]}
+                {label}
               </div>
               <div className="flex items-center justify-center gap-2">
                 <span className="text-xs text-gray-400">{teamA.flag}</span>
@@ -121,7 +121,8 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
                 <span className="text-xs text-gray-400">{teamB.flag}</span>
               </div>
             </motion.div>
-          ))}
+            )
+          })}
         </div>
       </motion.div>
 

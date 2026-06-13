@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Team, teams } from './data/teams'
 import { calculateComposite, CompositeResult, Odds } from './engines/composite'
 import { fetchWorldCupMatches, findMatch, findNextMatch, findLocalTeam, namesMatch, Match } from './services/matchData'
+import { predictWithLLM } from './services/llm'
 import Header from './components/Header'
 import TabBar from './components/TabBar'
 import TeamSelector from './components/TeamSelector'
@@ -22,6 +23,9 @@ export default function App() {
   const [matches, setMatches] = useState<Match[]>([])
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
   const [odds, setOdds] = useState<{ home: string; draw: string; away: string }>({ home: '', draw: '', away: '' })
+  const [apiKey, setApiKey] = useState(() => {
+    try { return localStorage.getItem('deepseek_api_key') ?? '' } catch { return '' }
+  })
 
   useEffect(() => {
     fetchWorldCupMatches().then(data => {
@@ -56,24 +60,35 @@ export default function App() {
       // fallback to prediction
     }
 
-    setTimeout(() => {
-      try {
-        const isNext = nextMatch && teamA && teamB && (
-          (namesMatch(teamA.nameEn, nextMatch.team1) && namesMatch(teamB.nameEn, nextMatch.team2)) ||
-          (namesMatch(teamA.nameEn, nextMatch.team2) && namesMatch(teamB.nameEn, nextMatch.team1))
-        )
-        const matchTime = isNext ? `${nextMatch!.date} ${nextMatch!.time}` : undefined
-        const h = parseFloat(odds.home)
-        const d = parseFloat(odds.draw)
-        const a = parseFloat(odds.away)
-        const parsedOdds: Odds | undefined = (h > 1 && d > 1 && a > 1) ? { home: h, draw: d, away: a } : undefined
-        const prediction = calculateComposite(teamA, teamB, matchTime, parsedOdds)
-        setResult(prediction)
-      } catch (e) {
-        console.error('推演失败:', e)
-      }
-      setIsRevealing(false)
-    }, 2000)
+    const isNext = nextMatch && teamA && teamB && (
+      (namesMatch(teamA.nameEn, nextMatch.team1) && namesMatch(teamB.nameEn, nextMatch.team2)) ||
+      (namesMatch(teamA.nameEn, nextMatch.team2) && namesMatch(teamB.nameEn, nextMatch.team1))
+    )
+    const matchTime = isNext ? `${nextMatch!.date} ${nextMatch!.time}` : undefined
+    const h = parseFloat(odds.home)
+    const d = parseFloat(odds.draw)
+    const a = parseFloat(odds.away)
+    const parsedOdds: Odds | undefined = (h > 1 && d > 1 && a > 1) ? { home: h, draw: d, away: a } : undefined
+
+    const llmPromise = apiKey
+      ? predictWithLLM(apiKey, teamA, teamB, selectedMatch?.round).catch(() => [] as [number, number][])
+      : Promise.resolve([] as [number, number][])
+
+    const [, llmScores] = await Promise.all([
+      new Promise(r => setTimeout(r, 3000)),
+      llmPromise,
+    ])
+
+    console.log('[推演] LLM 比分:', llmScores)
+
+    try {
+      const prediction = calculateComposite(teamA, teamB, matchTime, parsedOdds, llmScores.length > 0 ? llmScores : undefined)
+      console.log('[推演] 最终比分:', prediction.predictedScores, '判词:', prediction.verdict)
+      setResult(prediction)
+    } catch (e) {
+      console.error('推演失败:', e)
+    }
+    setIsRevealing(false)
   }
 
   const handleMatchClick = (match: Match) => {
@@ -119,6 +134,8 @@ export default function App() {
                 selectedMatch={selectedMatch}
                 odds={odds}
                 onOddsChange={handleOddsChange}
+                apiKey={apiKey}
+                onApiKeyChange={setApiKey}
                 onPredict={handlePredict}
                 onGoToSchedule={() => setActiveTab('schedule')}
               />

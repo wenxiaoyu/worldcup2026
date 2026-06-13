@@ -23,6 +23,7 @@ export interface CompositeResult {
   predictedScores: [number, number][]
   verdict: string
   userOdds?: Odds
+  llmScores?: [number, number][]
 }
 
 const WEIGHTS = {
@@ -120,7 +121,7 @@ function predictTop3Scores(indexA: number, indexB: number, seed: string, odds?: 
   return results
 }
 
-export function calculateComposite(teamA: Team, teamB: Team, matchTime?: string, odds?: Odds): CompositeResult {
+export function calculateComposite(teamA: Team, teamB: Team, matchTime?: string, odds?: Odds, llmScores?: [number, number][]): CompositeResult {
   const divinationId = generateDivinationId()
   const seed = matchTime ? `${matchTime}:${divinationId}` : divinationId
   const astrology = calculateAstrology(teamA, teamB, seed)
@@ -228,7 +229,29 @@ export function calculateComposite(teamA: Team, teamB: Team, matchTime?: string,
 
   const destinyIndex = Math.abs(teamAFinalScore - teamBFinalScore)
   const predictedScore = predictScore(teamAFinalScore, teamBFinalScore, odds)
-  const predictedScores = predictTop3Scores(teamAFinalScore, teamBFinalScore, seed, odds, teamA.fifaRanking, teamB.fifaRanking)
+  let predictedScores = predictTop3Scores(teamAFinalScore, teamBFinalScore, seed, odds, teamA.fifaRanking, teamB.fifaRanking)
+
+  if (llmScores && llmScores.length > 0) {
+    const seen = new Set(`${predictedScores[0][0]}-${predictedScores[0][1]}`)
+    const merged: [number, number][] = [predictedScores[0]]
+    for (const s of llmScores) {
+      const key = `${s[0]}-${s[1]}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        merged.push(s)
+      }
+      if (merged.length >= 3) break
+    }
+    for (const s of predictedScores) {
+      if (merged.length >= 3) break
+      const key = `${s[0]}-${s[1]}`
+      if (!seen.has(key)) {
+        seen.add(key)
+        merged.push(s)
+      }
+    }
+    predictedScores = merged
+  }
 
   let verdict: string
   if (destinyIndex < 5) {
@@ -256,5 +279,6 @@ export function calculateComposite(teamA: Team, teamB: Team, matchTime?: string,
     predictedScores,
     verdict,
     userOdds: odds,
+    llmScores,
   }
 }
