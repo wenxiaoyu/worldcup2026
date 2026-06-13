@@ -66,7 +66,7 @@ function getDayPillar(date: Date): { gan: string; zhi: string; element: WuxingEl
 
 export function calculateWuxing(teamA: Team, teamB: Team, date?: string): WuxingResult {
   const rng = seededRandom(matchSeed(teamA.id, teamB.id, date))
-  const matchDate = date ? new Date(date) : new Date()
+  const matchDate = new Date()
 
   const elA = getTeamElement(teamA)
   const elB = getTeamElement(teamB)

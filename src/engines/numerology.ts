@@ -48,7 +48,7 @@ const numberMeanings: Record<number, string> = {
 
 export function calculateNumerology(teamA: Team, teamB: Team, date?: string): NumerologyResult {
   const rng = seededRandom(matchSeed(teamA.id, teamB.id, date))
-  const matchDate = date ? new Date(date) : new Date()
+  const matchDate = new Date()
 
   const numA = getNameNumber(teamA.nameEn)
   const numB = getNameNumber(teamB.nameEn)
