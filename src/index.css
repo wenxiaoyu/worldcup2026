@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cosmic-900: #0a0a1a;
+  --color-cosmic-800: #12122a;
+  --color-cosmic-700: #1a1a3e;
+  --color-cosmic-600: #252560;
+  --color-nebula-500: #6366f1;
+  --color-nebula-400: #818cf8;
+  --color-nebula-300: #a5b4fc;
+  --color-gold-500: #f59e0b;
+  --color-gold-400: #fbbf24;
+  --color-gold-300: #fcd34d;
+  --color-mystic-500: #8b5cf6;
+  --color-mystic-400: #a78bfa;
+}
+
+body {
+  margin: 0;
+  background: var(--color-cosmic-900);
+  color: #e2e8f0;
+  font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.stars-bg {
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #ffffff20, transparent),
+    radial-gradient(2px 2px at 40px 70px, #ffffff15, transparent),
+    radial-gradient(1px 1px at 90px 40px, #ffffff20, transparent),
+    radial-gradient(1px 1px at 130px 80px, #ffffff15, transparent),
+    radial-gradient(2px 2px at 160px 30px, #ffffff10, transparent);
+  background-size: 200px 100px;
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px var(--color-gold-400), 0 0 20px var(--color-gold-500), 0 0 40px var(--color-gold-500);
+}
+
+.card-glow {
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.3), inset 0 0 15px rgba(99, 102, 241, 0.1);
+}
+
+.gradient-border {
+  background: linear-gradient(var(--color-cosmic-800), var(--color-cosmic-800)) padding-box,
+              linear-gradient(135deg, var(--color-nebula-500), var(--color-mystic-500), var(--color-gold-500)) border-box;
+  border: 2px solid transparent;
+}
