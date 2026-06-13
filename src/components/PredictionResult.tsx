@@ -46,7 +46,7 @@ export default function PredictionResult({ teamA, teamB, result, onReset }: Prop
           onClick={onReset}
           className="px-6 py-3 border border-nebula-500 text-nebula-300 rounded-lg hover:bg-nebula-500/10 transition-colors"
         >
-          🔄 重新推演
+          再卜一卦
         </button>
       </div>
     </motion.div>

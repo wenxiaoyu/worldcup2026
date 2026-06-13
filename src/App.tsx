@@ -66,8 +66,8 @@ export default function App() {
         {isRevealing && (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="text-6xl spin-slow mb-8">☯</div>
-            <p className="text-xl text-nebula-300 animate-pulse">天机推演中...</p>
-            <p className="text-sm text-gray-500 mt-2">星象排列 · 五行推演 · 塔罗占卜 · 命理测算</p>
+            <p className="text-xl text-nebula-300 animate-pulse">气运流转，卦象推演中...</p>
+            <p className="text-sm text-gray-500 mt-2">观星象 · 演五行 · 翻塔罗 · 起六爻</p>
           </div>
         )}
 

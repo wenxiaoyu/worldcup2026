@@ -3,6 +3,7 @@ import { calculateAstrology, AstrologyResult } from './astrology'
 import { calculateWuxing, WuxingResult } from './wuxing'
 import { calculateTarot, TarotResult } from './tarot'
 import { calculateNumerology, NumerologyResult } from './numerology'
+import { generateDivinationId } from '../utils/random'
 
 export interface CompositeResult {
   astrology: AstrologyResult
@@ -89,10 +90,11 @@ function predictTop3Scores(indexA: number, indexB: number): [number, number][] {
 }
 
 export function calculateComposite(teamA: Team, teamB: Team, date?: string): CompositeResult {
-  const astrology = calculateAstrology(teamA, teamB, date)
-  const wuxing = calculateWuxing(teamA, teamB, date)
-  const tarot = calculateTarot(teamA, teamB, date)
-  const numerology = calculateNumerology(teamA, teamB, date)
+  const seed = date || generateDivinationId()
+  const astrology = calculateAstrology(teamA, teamB, seed)
+  const wuxing = calculateWuxing(teamA, teamB, seed)
+  const tarot = calculateTarot(teamA, teamB, seed)
+  const numerology = calculateNumerology(teamA, teamB, seed)
 
   const teamAFinalScore = Math.round(
     astrology.teamAScore * WEIGHTS.astrology +

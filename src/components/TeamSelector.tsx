@@ -91,7 +91,7 @@ export default function TeamSelector({ teams, teamA, teamB, onSelectA, onSelectB
     >
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gold-400 mb-2">选择对阵双方</h2>
-        <p className="text-gray-400 text-sm">选定两支球队，开启天机推演</p>
+        <p className="text-gray-400 text-sm">选定两支球队，诚心一拜，开启天机</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 items-stretch">

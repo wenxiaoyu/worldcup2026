@@ -16,6 +16,11 @@ export function todaySeed(): string {
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`
 }
 
+export function generateDivinationId(): string {
+  const r = Math.random().toString(36).slice(2, 10)
+  return `${todaySeed()}:${r}`
+}
+
 export function matchSeed(teamA: string, teamB: string, date?: string): string {
   const d = date || todaySeed()
   return `${d}:${teamA}:${teamB}`

@@ -13,7 +13,7 @@ export default function Header() {
         </h1>
         <p className="text-nebula-300 text-lg">2026 世界杯玄学比分预测</p>
         <p className="text-gray-500 text-sm mt-1">
-          星象 · 五行 · 塔罗 · 命理 — 四维天机推演
+          星象 · 五行 · 塔罗 · 命理 — 四维天机，一卦一乾坤
         </p>
       </motion.div>
       <div className="absolute top-4 left-8 text-3xl float-animation opacity-30">✦</div>
