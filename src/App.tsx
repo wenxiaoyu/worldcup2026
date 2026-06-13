@@ -69,6 +69,18 @@ export default function App() {
     }, 2000)
   }
 
+  const handleMatchClick = (match: Match) => {
+    const a = findLocalTeam(match.team1, teams) as Team | undefined
+    const b = findLocalTeam(match.team2, teams) as Team | undefined
+    if (a && b) {
+      setTeamA(a)
+      setTeamB(b)
+      setResult(null)
+      setRealMatch(null)
+      setActiveTab('predict')
+    }
+  }
+
   const handleReset = () => {
     setTeamA(null)
     setTeamB(null)
@@ -125,7 +137,7 @@ export default function App() {
         )}
 
         {activeTab === 'schedule' && (
-          <ScheduleView matches={matches} />
+          <ScheduleView matches={matches} onMatchClick={handleMatchClick} />
         )}
 
         {activeTab === 'standings' && (

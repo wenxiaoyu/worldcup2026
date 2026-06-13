@@ -166,7 +166,7 @@ export default function TeamSelector({ teams, teamA, teamB, nextMatch, onSelectA
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
+          className="text-center pt-4 md:pt-6"
         >
           <button
             onClick={onPredict}

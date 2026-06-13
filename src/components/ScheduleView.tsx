@@ -5,6 +5,7 @@ import { teams as localTeams, groups } from '../data/teams'
 
 interface Props {
   matches: Match[]
+  onMatchClick?: (match: Match) => void
 }
 
 function findFlag(jsonName: string): string {
@@ -21,7 +22,7 @@ function getGroupLabel(match: Match): string {
   return match.group?.replace('Group ', '') ?? ''
 }
 
-export default function ScheduleView({ matches }: Props) {
+export default function ScheduleView({ matches, onMatchClick }: Props) {
   const [filterGroup, setFilterGroup] = useState<string>('all')
 
   const today = useMemo(() => {
@@ -93,12 +94,14 @@ export default function ScheduleView({ matches }: Props) {
             {dayEntries.map(({ match: m, bjTime }, i) => {
               const hasScore = !!m.score?.ft
               const isToday = date === today
+              const clickable = !hasScore && onMatchClick
               return (
                 <div
                   key={i}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                  onClick={clickable ? () => onMatchClick!(m) : undefined}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors ${
                     isToday ? 'bg-gold-500/5 border border-gold-500/20' : 'bg-cosmic-800/50 border border-cosmic-700/50'
-                  }`}
+                  } ${clickable ? 'cursor-pointer active:bg-cosmic-700/60 hover:border-nebula-500/30' : ''}`}
                 >
                   <div className="w-12 shrink-0 text-center">
                     <div className="text-[10px] text-gray-500">{bjTime}</div>
