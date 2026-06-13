@@ -131,8 +131,8 @@ export function calculateComposite(teamA: Team, teamB: Team, matchTime?: string,
   )
 
   const rankGap = Math.abs(teamA.fifaRanking - teamB.fifaRanking)
-  if (rankGap > 10) {
-    const boost = Math.min(12, Math.round((rankGap - 10) * 0.35))
+  if (rankGap > 5) {
+    const boost = Math.min(12, Math.round((rankGap - 5) * 0.3))
     if (teamA.fifaRanking < teamB.fifaRanking) {
       teamAFinalScore += boost
       teamBFinalScore -= boost
