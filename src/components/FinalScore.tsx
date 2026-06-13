@@ -124,6 +124,45 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
           ))}
         </div>
       </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.5 }}
+        className="mt-4 md:mt-6 pt-4 border-t border-cosmic-700/50"
+      >
+        <div className="text-[10px] md:text-xs text-gray-600 mb-2">玄学参考赔率（仅供娱乐）</div>
+        {(() => {
+          const total = result.teamAFinalScore + result.teamBFinalScore
+          const rawA = result.teamAFinalScore / total
+          const rawB = result.teamBFinalScore / total
+          const diff = Math.abs(rawA - rawB)
+          const drawProb = Math.max(0.12, 0.32 - diff * 0.8)
+          const remaining = 1 - drawProb
+          const probA = rawA / (rawA + rawB) * remaining
+          const probB = rawB / (rawA + rawB) * remaining
+          const margin = 1.08
+          const oddsA = (margin / probA).toFixed(2)
+          const oddsDraw = (margin / drawProb).toFixed(2)
+          const oddsB = (margin / probB).toFixed(2)
+          return (
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-cosmic-700/30 rounded-lg py-2 px-1">
+                <div className="text-[10px] text-gray-500 mb-0.5">主胜</div>
+                <div className="text-lg md:text-xl font-bold text-nebula-300">{oddsA}</div>
+              </div>
+              <div className="bg-cosmic-700/30 rounded-lg py-2 px-1">
+                <div className="text-[10px] text-gray-500 mb-0.5">平局</div>
+                <div className="text-lg md:text-xl font-bold text-gray-300">{oddsDraw}</div>
+              </div>
+              <div className="bg-cosmic-700/30 rounded-lg py-2 px-1">
+                <div className="text-[10px] text-gray-500 mb-0.5">客胜</div>
+                <div className="text-lg md:text-xl font-bold text-gold-400">{oddsB}</div>
+              </div>
+            </div>
+          )
+        })()}
+      </motion.div>
     </motion.div>
   )
 }
