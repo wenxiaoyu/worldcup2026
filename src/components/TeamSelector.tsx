@@ -26,6 +26,11 @@ function TeamPicker({ label, selected, teams, onSelect, excludeId }: {
     (t.name.includes(search) || t.nameEn.toLowerCase().includes(search.toLowerCase()))
   )
 
+  const grouped = filtered.reduce<Record<string, Team[]>>((acc, t) => {
+    (acc[t.group] ||= []).push(t)
+    return acc
+  }, {})
+
   return (
     <div className="flex-1">
       <label className="block text-sm text-nebula-300 mb-2">{label}</label>
@@ -38,7 +43,7 @@ function TeamPicker({ label, selected, teams, onSelect, excludeId }: {
         >
           <div className="text-4xl mb-2">{selected.flag}</div>
           <div className="text-lg font-bold">{selected.name}</div>
-          <div className="text-xs text-gray-400">{selected.nameEn}</div>
+          <div className="text-xs text-gray-400">{selected.nameEn} · {selected.group}组</div>
         </motion.div>
       ) : (
         <div className="relative">
@@ -58,15 +63,20 @@ function TeamPicker({ label, selected, teams, onSelect, excludeId }: {
                 exit={{ opacity: 0, y: -10 }}
                 className="absolute top-full left-0 right-0 mt-1 bg-cosmic-800 border border-cosmic-600 rounded-lg max-h-60 overflow-y-auto z-10"
               >
-                {filtered.map(team => (
-                  <div
-                    key={team.id}
-                    onClick={() => { onSelect(team); setIsOpen(false); setSearch('') }}
-                    className="px-4 py-2 hover:bg-cosmic-700 cursor-pointer flex items-center gap-3"
-                  >
-                    <span className="text-xl">{team.flag}</span>
-                    <span>{team.name}</span>
-                    <span className="text-xs text-gray-500 ml-auto">{team.nameEn}</span>
+                {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([group, groupTeams]) => (
+                  <div key={group}>
+                    <div className="px-4 py-1 text-xs text-mystic-400 bg-cosmic-900/50 sticky top-0">{group}组</div>
+                    {groupTeams.map(team => (
+                      <div
+                        key={team.id}
+                        onClick={() => { onSelect(team); setIsOpen(false); setSearch('') }}
+                        className="px-4 py-2 hover:bg-cosmic-700 cursor-pointer flex items-center gap-3"
+                      >
+                        <span className="text-xl">{team.flag}</span>
+                        <span>{team.name}</span>
+                        <span className="text-xs text-gray-500 ml-auto">{team.nameEn}</span>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </motion.div>
