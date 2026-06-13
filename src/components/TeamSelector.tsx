@@ -18,15 +18,9 @@ function TeamPicker({ label, selected, teams, onSelect, excludeId }: {
   onSelect: (team: Team) => void
   excludeId?: string
 }) {
-  const [search, setSearch] = useState('')
   const [isOpen, setIsOpen] = useState(false)
 
-  const filtered = teams.filter(t =>
-    t.id !== excludeId &&
-    (t.name.includes(search) || t.nameEn.toLowerCase().includes(search.toLowerCase()))
-  )
-
-  const grouped = filtered.reduce<Record<string, Team[]>>((acc, t) => {
+  const grouped = teams.filter(t => t.id !== excludeId).reduce<Record<string, Team[]>>((acc, t) => {
     (acc[t.group] ||= []).push(t)
     return acc
   }, {})
@@ -47,14 +41,13 @@ function TeamPicker({ label, selected, teams, onSelect, excludeId }: {
         </motion.div>
       ) : (
         <div className="relative">
-          <input
-            type="text"
-            value={search}
-            onChange={e => { setSearch(e.target.value); setIsOpen(true) }}
-            onFocus={() => setIsOpen(true)}
-            placeholder="搜索球队..."
-            className="w-full bg-cosmic-800 border border-cosmic-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-nebula-500"
-          />
+          <button
+            type="button"
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-full bg-cosmic-800 border border-cosmic-600 rounded-lg px-4 py-3 text-gray-400 text-left focus:outline-none focus:border-nebula-500"
+          >
+            点击选择球队...
+          </button>
           <AnimatePresence>
             {isOpen && (
               <motion.div
@@ -69,7 +62,7 @@ function TeamPicker({ label, selected, teams, onSelect, excludeId }: {
                     {groupTeams.map(team => (
                       <div
                         key={team.id}
-                        onClick={() => { onSelect(team); setIsOpen(false); setSearch('') }}
+                        onClick={() => { onSelect(team); setIsOpen(false) }}
                         className="px-4 py-2 hover:bg-cosmic-700 cursor-pointer flex items-center gap-3"
                       >
                         <span className="text-xl">{team.flag}</span>
