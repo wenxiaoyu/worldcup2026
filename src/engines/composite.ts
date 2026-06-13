@@ -13,6 +13,7 @@ export interface CompositeResult {
   teamBFinalScore: number
   destinyIndex: number
   predictedScore: [number, number]
+  predictedScores: [number, number][]
   verdict: string
 }
 
@@ -40,6 +41,53 @@ function predictScore(indexA: number, indexB: number): [number, number] {
   return [loserGoals, winnerGoals]
 }
 
+function predictTop3Scores(indexA: number, indexB: number): [number, number][] {
+  const primary = predictScore(indexA, indexB)
+  const diff = indexA - indexB
+  const total = Math.round((indexA + indexB) / 30)
+  const clampedTotal = Math.max(1, Math.min(7, total))
+  const results: [number, number][] = [primary]
+
+  const seen = new Set(`${primary[0]}-${primary[1]}`)
+
+  const tryAdd = (score: [number, number]) => {
+    const key = `${score[0]}-${score[1]}`
+    if (!seen.has(key) && score[0] >= 0 && score[1] >= 0 && score[0] <= 6 && score[1] <= 6) {
+      seen.add(key)
+      results.push(score)
+    }
+  }
+
+  if (Math.abs(diff) < 5) {
+    const half1 = Math.floor((clampedTotal + 1) / 2)
+    const half2 = Math.ceil((clampedTotal + 1) / 2)
+    tryAdd([half1, half2])
+    tryAdd([half2, half1])
+    if (clampedTotal > 1) {
+      const h = Math.floor((clampedTotal - 1) / 2)
+      tryAdd([h, h])
+    }
+    tryAdd([half1 + 1, half2])
+    tryAdd([half1, half2 + 1])
+  } else {
+    const winnerIsA = diff > 0
+    const wG = Math.min(5, Math.round(clampedTotal * 0.65))
+    const lG = Math.max(0, clampedTotal - wG)
+
+    if (wG > 0) tryAdd(winnerIsA ? [wG - 1, lG] : [lG, wG - 1])
+    tryAdd(winnerIsA ? [wG + 1, lG] : [lG, wG + 1])
+    if (lG > 0) tryAdd(winnerIsA ? [wG, lG - 1] : [lG - 1, wG])
+    tryAdd(winnerIsA ? [wG, lG + 1] : [lG + 1, wG])
+    if (clampedTotal > 1) {
+      const w2 = Math.min(5, Math.round((clampedTotal - 1) * 0.65))
+      const l2 = Math.max(0, (clampedTotal - 1) - w2)
+      tryAdd(winnerIsA ? [w2, l2] : [l2, w2])
+    }
+  }
+
+  return results.slice(0, 3)
+}
+
 export function calculateComposite(teamA: Team, teamB: Team, date?: string): CompositeResult {
   const astrology = calculateAstrology(teamA, teamB, date)
   const wuxing = calculateWuxing(teamA, teamB, date)
@@ -62,6 +110,7 @@ export function calculateComposite(teamA: Team, teamB: Team, date?: string): Com
 
   const destinyIndex = Math.abs(teamAFinalScore - teamBFinalScore)
   const predictedScore = predictScore(teamAFinalScore, teamBFinalScore)
+  const predictedScores = predictTop3Scores(teamAFinalScore, teamBFinalScore)
 
   let verdict: string
   if (destinyIndex < 5) {
@@ -86,6 +135,7 @@ export function calculateComposite(teamA: Team, teamB: Team, date?: string): Com
     teamBFinalScore,
     destinyIndex,
     predictedScore,
+    predictedScores,
     verdict,
   }
 }

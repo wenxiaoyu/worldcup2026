@@ -9,6 +9,9 @@ interface Props {
 }
 
 export default function FinalScore({ teamA, teamB, result }: Props) {
+  const primary = result.predictedScores[0]
+  const alternatives = result.predictedScores.slice(1)
+
   return (
     <motion.div
       initial={{ scale: 0.8, opacity: 0 }}
@@ -31,11 +34,11 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
           className="flex items-center gap-3"
         >
           <span className="text-5xl md:text-6xl font-bold text-gold-400 glow-text">
-            {result.predictedScore[0]}
+            {primary[0]}
           </span>
           <span className="text-3xl text-gray-500">:</span>
           <span className="text-5xl md:text-6xl font-bold text-gold-400 glow-text">
-            {result.predictedScore[1]}
+            {primary[1]}
           </span>
         </motion.div>
 
@@ -44,6 +47,29 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
           <div className="text-sm text-gray-400">{teamB.name}</div>
         </div>
       </div>
+
+      {alternatives.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          className="mb-6"
+        >
+          <p className="text-xs text-gray-500 mb-2">其他天机可能</p>
+          <div className="flex justify-center gap-3">
+            {alternatives.map((score, i) => (
+              <div
+                key={i}
+                className="px-4 py-2 bg-cosmic-700/50 rounded-lg border border-cosmic-600"
+              >
+                <span className="text-lg font-bold text-nebula-300">{score[0]}</span>
+                <span className="text-sm text-gray-500 mx-1">:</span>
+                <span className="text-lg font-bold text-nebula-300">{score[1]}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       <div className="mb-4">
         <div className="flex justify-between text-xs text-gray-500 mb-1">
