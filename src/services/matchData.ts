@@ -96,3 +96,15 @@ export function findNextMatch(matches: Match[]): Match | null {
 export function findLocalTeam(jsonTeamName: string, localTeams: { nameEn: string }[]): { nameEn: string } | null {
   return localTeams.find(t => namesMatch(t.nameEn, jsonTeamName)) ?? null
 }
+
+export function toBeijingTime(timeStr: string): string {
+  const match = timeStr.match(/(\d{1,2}):(\d{2})\s*UTC([+-]\d{1,2})/)
+  if (!match) return timeStr
+  const hours = parseInt(match[1])
+  const minutes = parseInt(match[2])
+  const utcOffset = parseInt(match[3])
+  const totalMinutes = hours * 60 + minutes - utcOffset * 60 + 8 * 60
+  const bjHours = ((totalMinutes / 60) % 24 + 24) % 24
+  const bjMinutes = totalMinutes % 60
+  return `${String(Math.floor(bjHours)).padStart(2, '0')}:${String(Math.abs(bjMinutes)).padStart(2, '0')}`
+}

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Match, namesMatch } from '../services/matchData'
+import { Match, namesMatch, toBeijingTime } from '../services/matchData'
 import { teams as localTeams, groups } from '../data/teams'
 
 interface Props {
@@ -95,7 +95,7 @@ export default function ScheduleView({ matches }: Props) {
                   }`}
                 >
                   <div className="w-12 shrink-0 text-center">
-                    <div className="text-[10px] text-gray-500">{m.time.split(' ')[0]}</div>
+                    <div className="text-[10px] text-gray-500">{toBeijingTime(m.time)}</div>
                   </div>
                   <div className="flex-1 min-w-0 flex items-center gap-1.5">
                     <span className="text-base">{findFlag(m.team1)}</span>
