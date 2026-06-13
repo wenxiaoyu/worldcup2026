@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Team, teams } from './data/teams'
 import { calculateComposite, CompositeResult } from './engines/composite'
-import { fetchWorldCupMatches, findMatch, findNextMatch, findLocalTeam, Match } from './services/matchData'
+import { fetchWorldCupMatches, findMatch, findNextMatch, findLocalTeam, namesMatch, Match } from './services/matchData'
 import Header from './components/Header'
 import TeamSelector from './components/TeamSelector'
 import PredictionResult from './components/PredictionResult'
@@ -14,10 +14,12 @@ export default function App() {
   const [result, setResult] = useState<CompositeResult | null>(null)
   const [realMatch, setRealMatch] = useState<Match | null>(null)
   const [isRevealing, setIsRevealing] = useState(false)
+  const [nextMatch, setNextMatch] = useState<Match | null>(null)
 
   useEffect(() => {
     fetchWorldCupMatches().then(matches => {
       const next = findNextMatch(matches)
+      if (next) setNextMatch(next)
       if (!next) return
       const a = findLocalTeam(next.team1, teams) as Team | undefined
       const b = findLocalTeam(next.team2, teams) as Team | undefined
@@ -47,8 +49,17 @@ export default function App() {
     }
 
     setTimeout(() => {
-      const prediction = calculateComposite(teamA, teamB)
-      setResult(prediction)
+      try {
+        const isNext = nextMatch && teamA && teamB && (
+          (namesMatch(teamA.nameEn, nextMatch.team1) && namesMatch(teamB.nameEn, nextMatch.team2)) ||
+          (namesMatch(teamA.nameEn, nextMatch.team2) && namesMatch(teamB.nameEn, nextMatch.team1))
+        )
+        const matchTime = isNext ? `${nextMatch!.date} ${nextMatch!.time}` : undefined
+        const prediction = calculateComposite(teamA, teamB, matchTime)
+        setResult(prediction)
+      } catch (e) {
+        console.error('推演失败:', e)
+      }
       setIsRevealing(false)
     }, 2000)
   }
@@ -70,6 +81,7 @@ export default function App() {
             teams={teams}
             teamA={teamA}
             teamB={teamB}
+            nextMatch={nextMatch}
             onSelectA={setTeamA}
             onSelectB={setTeamB}
             onPredict={handlePredict}

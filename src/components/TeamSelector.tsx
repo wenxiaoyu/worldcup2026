@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Team } from '../data/teams'
+import { Match, namesMatch } from '../services/matchData'
 
 interface Props {
   teams: Team[]
   teamA: Team | null
   teamB: Team | null
+  nextMatch: Match | null
   onSelectA: (team: Team) => void
   onSelectB: (team: Team) => void
   onPredict: () => void
@@ -103,7 +105,12 @@ function TeamPicker({ label, selected, teams, onSelect, excludeId }: {
   )
 }
 
-export default function TeamSelector({ teams, teamA, teamB, onSelectA, onSelectB, onPredict }: Props) {
+export default function TeamSelector({ teams, teamA, teamB, nextMatch, onSelectA, onSelectB, onPredict }: Props) {
+  const isNextMatch = !!(nextMatch && teamA && teamB && (
+    (namesMatch(teamA.nameEn, nextMatch.team1) && namesMatch(teamB.nameEn, nextMatch.team2)) ||
+    (namesMatch(teamA.nameEn, nextMatch.team2) && namesMatch(teamB.nameEn, nextMatch.team1))
+  ))
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -115,6 +122,20 @@ export default function TeamSelector({ teams, teamA, teamB, onSelectA, onSelectB
         <h2 className="text-2xl font-bold text-gold-400 mb-2">选择对阵双方</h2>
         <p className="text-gray-400 text-sm">选定两支球队，诚心一拜，开启天机</p>
       </div>
+
+      {isNextMatch && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <div className="inline-block px-4 py-2 rounded-full bg-nebula-500/10 border border-nebula-500/30">
+            <span className="text-xs text-nebula-300">下一场</span>
+            <span className="text-sm text-white font-medium mx-2">{nextMatch.round}</span>
+            <span className="text-xs text-gray-400">{nextMatch.date} {nextMatch.time}</span>
+          </div>
+        </motion.div>
+      )}
 
       <div className="flex flex-col md:flex-row gap-6 items-stretch">
         <TeamPicker

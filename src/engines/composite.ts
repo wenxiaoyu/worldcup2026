@@ -89,8 +89,9 @@ function predictTop3Scores(indexA: number, indexB: number): [number, number][] {
   return results.slice(0, 3)
 }
 
-export function calculateComposite(teamA: Team, teamB: Team, date?: string): CompositeResult {
-  const seed = date || generateDivinationId()
+export function calculateComposite(teamA: Team, teamB: Team, matchTime?: string): CompositeResult {
+  const divinationId = generateDivinationId()
+  const seed = matchTime ? `${matchTime}:${divinationId}` : divinationId
   const astrology = calculateAstrology(teamA, teamB, seed)
   const wuxing = calculateWuxing(teamA, teamB, seed)
   const tarot = calculateTarot(teamA, teamB, seed)
