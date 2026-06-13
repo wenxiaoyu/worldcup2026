@@ -84,3 +84,15 @@ export function getMatchScoreForTeams(match: Match, teamANameEn: string): [numbe
   if (namesMatch(teamANameEn, match.team1)) return [s1, s2]
   return [s2, s1]
 }
+
+export function findNextMatch(matches: Match[]): Match | null {
+  const now = new Date()
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  return matches
+    .filter(m => !m.score?.ft && m.date >= today)
+    .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))[0] ?? null
+}
+
+export function findLocalTeam(jsonTeamName: string, localTeams: { nameEn: string }[]): { nameEn: string } | null {
+  return localTeams.find(t => namesMatch(t.nameEn, jsonTeamName)) ?? null
+}

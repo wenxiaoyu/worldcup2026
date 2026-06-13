@@ -40,42 +40,64 @@ function TeamPicker({ label, selected, teams, onSelect, excludeId }: {
           <div className="text-xs text-gray-400">{selected.nameEn} · {selected.group}组</div>
         </motion.div>
       ) : (
-        <div className="relative">
+        <>
           <button
             type="button"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsOpen(true)}
             className="w-full bg-cosmic-800 border border-cosmic-600 rounded-lg px-4 py-3 text-gray-400 text-left focus:outline-none focus:border-nebula-500"
           >
             点击选择球队...
           </button>
           <AnimatePresence>
             {isOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 right-0 mt-1 bg-cosmic-800 border border-cosmic-600 rounded-lg max-h-60 overflow-y-auto z-10"
-              >
-                {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([group, groupTeams]) => (
-                  <div key={group}>
-                    <div className="px-4 py-1 text-xs text-mystic-400 bg-cosmic-900/50 sticky top-0">{group}组</div>
-                    {groupTeams.map(team => (
-                      <div
-                        key={team.id}
-                        onClick={() => { onSelect(team); setIsOpen(false) }}
-                        className="px-4 py-2 hover:bg-cosmic-700 cursor-pointer flex items-center gap-3"
-                      >
-                        <span className="text-xl">{team.flag}</span>
-                        <span>{team.name}</span>
-                        <span className="text-xs text-gray-500 ml-auto">{team.nameEn}</span>
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/60 z-40"
+                  onClick={() => setIsOpen(false)}
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: '100%' }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: '100%' }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  className="fixed bottom-0 left-0 right-0 z-50 bg-cosmic-800 rounded-t-2xl max-h-[70vh] flex flex-col md:bottom-auto md:top-1/2 md:left-1/2 md:right-auto md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl md:max-h-[70vh] md:w-96 md:max-w-[90vw]"
+                >
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-cosmic-600">
+                    <span className="text-sm text-nebula-300 font-medium">{label}</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsOpen(false)}
+                      className="text-gray-500 hover:text-white text-xl leading-none px-2"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="overflow-y-auto flex-1">
+                    {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([group, groupTeams]) => (
+                      <div key={group}>
+                        <div className="px-4 py-2 text-xs text-mystic-400 bg-cosmic-900/80 sticky top-0 font-medium">{group}组</div>
+                        {groupTeams.map(team => (
+                          <div
+                            key={team.id}
+                            onClick={() => { onSelect(team); setIsOpen(false) }}
+                            className="px-4 py-3 hover:bg-cosmic-700 cursor-pointer flex items-center gap-3 active:bg-cosmic-600"
+                          >
+                            <span className="text-2xl">{team.flag}</span>
+                            <span className="text-base">{team.name}</span>
+                            <span className="text-xs text-gray-500 ml-auto">{team.nameEn}</span>
+                          </div>
+                        ))}
                       </div>
                     ))}
                   </div>
-                ))}
-              </motion.div>
+                </motion.div>
+              </>
             )}
           </AnimatePresence>
-        </div>
+        </>
       )}
     </div>
   )

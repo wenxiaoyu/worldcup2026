@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Team, teams } from './data/teams'
 import { calculateComposite, CompositeResult } from './engines/composite'
-import { fetchWorldCupMatches, findMatch, Match } from './services/matchData'
+import { fetchWorldCupMatches, findMatch, findNextMatch, findLocalTeam, Match } from './services/matchData'
 import Header from './components/Header'
 import TeamSelector from './components/TeamSelector'
 import PredictionResult from './components/PredictionResult'
@@ -14,6 +14,19 @@ export default function App() {
   const [result, setResult] = useState<CompositeResult | null>(null)
   const [realMatch, setRealMatch] = useState<Match | null>(null)
   const [isRevealing, setIsRevealing] = useState(false)
+
+  useEffect(() => {
+    fetchWorldCupMatches().then(matches => {
+      const next = findNextMatch(matches)
+      if (!next) return
+      const a = findLocalTeam(next.team1, teams) as Team | undefined
+      const b = findLocalTeam(next.team2, teams) as Team | undefined
+      if (a && b) {
+        setTeamA(a)
+        setTeamB(b)
+      }
+    })
+  }, [])
 
   const handlePredict = async () => {
     if (!teamA || !teamB) return
