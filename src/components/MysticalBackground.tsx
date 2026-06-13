@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 const TRIGRAMS = ['☰', '☱', '☲', '☳', '☴', '☵', '☶', '☷']
 const MYSTIC_SYMBOLS = ['✦', '✧', '☯', '⬡', '◇', '✴', '⟡', '⊛']
 
+const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
 function BaguaRing({ radius, count, speed, opacity, color }: {
   radius: number
   count: number
@@ -91,8 +93,8 @@ function EnergyPulse({ delay, color }: { delay: number; color: string }) {
         border: `1px solid rgba(${color}, 0.4)`,
       }}
       animate={{
-        width: [10, 600],
-        height: [10, 600],
+        width: [10, isMobile ? 400 : 600],
+        height: [10, isMobile ? 400 : 600],
         opacity: [0.6, 0],
         borderWidth: ['2px', '0.5px'],
       }}
@@ -143,6 +145,9 @@ function FloatingParticle({ symbol, color, size, x, duration, delay }: {
 }
 
 export default function MysticalBackground() {
+  const particleCount = isMobile ? 10 : 24
+  const shootingStarCount = isMobile ? 2 : 5
+
   const particles = useMemo(() => {
     const colors = [
       'rgba(165,180,252,0.7)',
@@ -151,19 +156,19 @@ export default function MysticalBackground() {
       'rgba(99,102,241,0.6)',
       'rgba(139,92,246,0.5)',
     ]
-    return Array.from({ length: 24 }, (_, i) => ({
+    return Array.from({ length: particleCount }, (_, i) => ({
       id: i,
       symbol: i < 8 ? TRIGRAMS[i] : MYSTIC_SYMBOLS[i % MYSTIC_SYMBOLS.length],
       color: colors[i % colors.length],
       x: Math.random() * 100,
       delay: Math.random() * 20,
       duration: 12 + Math.random() * 18,
-      size: 12 + Math.random() * 20,
+      size: 12 + Math.random() * (isMobile ? 12 : 20),
     }))
   }, [])
 
   const shootingStars = useMemo(() =>
-    Array.from({ length: 5 }, (_, i) => ({
+    Array.from({ length: shootingStarCount }, (_, i) => ({
       id: i,
       delay: i * 4 + Math.random() * 6,
       top: Math.random() * 40,
@@ -172,13 +177,13 @@ export default function MysticalBackground() {
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      <BaguaRing radius={120} count={8} speed={60} opacity={0.12} color="99,102,241" />
-      <BaguaRing radius={200} count={12} speed={-90} opacity={0.07} color="167,139,250" />
-      <BaguaRing radius={300} count={16} speed={120} opacity={0.04} color="251,191,36" />
+      <BaguaRing radius={isMobile ? 80 : 120} count={8} speed={60} opacity={isMobile ? 0.08 : 0.12} color="99,102,241" />
+      {!isMobile && <BaguaRing radius={200} count={12} speed={-90} opacity={0.07} color="167,139,250" />}
+      {!isMobile && <BaguaRing radius={300} count={16} speed={120} opacity={0.04} color="251,191,36" />}
 
       <EnergyPulse delay={0} color="99,102,241" />
-      <EnergyPulse delay={2} color="139,92,246" />
-      <EnergyPulse delay={4} color="251,191,36" />
+      {!isMobile && <EnergyPulse delay={2} color="139,92,246" />}
+      {!isMobile && <EnergyPulse delay={4} color="251,191,36" />}
 
       {shootingStars.map(s => (
         <ShootingStar key={s.id} delay={s.delay} top={s.top} left={s.left} />

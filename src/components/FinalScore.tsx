@@ -18,11 +18,11 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.6, delay: 0.2 }}
-      className="gradient-border rounded-2xl p-8 text-center card-glow"
+      className="gradient-border rounded-2xl p-4 md:p-8 text-center card-glow"
     >
-      <h3 className="text-sm text-nebula-300 mb-4 uppercase tracking-widest">天命预测比分</h3>
+      <h3 className="text-xs md:text-sm text-nebula-300 mb-2 md:mb-4 uppercase tracking-widest">天命预测比分</h3>
 
-      <div className="flex items-center justify-center gap-6 mb-6">
+      <div className="flex items-center justify-center gap-4 md:gap-6 mb-4 md:mb-6">
         <div className="text-center">
           <div className="text-2xl mb-1">{teamA.flag}</div>
           <div className="text-sm text-gray-400">{teamA.name}</div>
@@ -74,7 +74,7 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
-        className="text-lg text-gold-300 font-bold mb-6"
+        className="text-base md:text-lg text-gold-300 font-bold mb-4 md:mb-6"
       >
         {result.verdict}
       </motion.p>

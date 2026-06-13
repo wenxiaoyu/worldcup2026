@@ -28,25 +28,25 @@ function TeamPicker({ label, selected, teams, onSelect, excludeId }: {
   }, {})
 
   return (
-    <div className="flex-1">
-      <label className="block text-sm text-nebula-300 mb-2">{label}</label>
+    <div className="flex-1 min-w-0">
+      <label className="block text-xs md:text-sm text-nebula-300 mb-1 md:mb-2">{label}</label>
       {selected ? (
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="gradient-border rounded-xl p-4 text-center cursor-pointer hover:opacity-80"
+          className="gradient-border rounded-lg md:rounded-xl p-2 md:p-4 text-center cursor-pointer hover:opacity-80 active:opacity-70"
           onClick={() => { onSelect(null as unknown as Team); setIsOpen(true) }}
         >
-          <div className="text-4xl mb-2">{selected.flag}</div>
-          <div className="text-lg font-bold">{selected.name}</div>
-          <div className="text-xs text-gray-400">{selected.nameEn} · {selected.group}组</div>
+          <div className="text-2xl md:text-4xl mb-0.5 md:mb-2">{selected.flag}</div>
+          <div className="text-sm md:text-lg font-bold truncate">{selected.name}</div>
+          <div className="text-[10px] md:text-xs text-gray-400 truncate">{selected.nameEn} · {selected.group}组</div>
         </motion.div>
       ) : (
         <>
           <button
             type="button"
             onClick={() => setIsOpen(true)}
-            className="w-full bg-cosmic-800 border border-cosmic-600 rounded-lg px-4 py-3 text-gray-400 text-left focus:outline-none focus:border-nebula-500"
+            className="w-full bg-cosmic-800 border border-cosmic-600 rounded-lg px-3 py-2.5 md:px-4 md:py-3 text-sm md:text-base text-gray-400 text-left focus:outline-none focus:border-nebula-500"
           >
             点击选择球队...
           </button>
@@ -116,11 +116,11 @@ export default function TeamSelector({ teams, teamA, teamB, nextMatch, onSelectA
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-8"
+      className="space-y-3 md:space-y-8"
     >
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gold-400 mb-2">选择对阵双方</h2>
-        <p className="text-gray-400 text-sm">选定两支球队，诚心一拜，开启天机</p>
+      <div className="text-center mb-3 md:mb-8">
+        <h2 className="text-lg md:text-2xl font-bold text-gold-400 mb-0.5 md:mb-2">选择对阵双方</h2>
+        <p className="text-gray-400 text-xs md:text-sm">选定两支球队，诚心一拜，开启天机</p>
       </div>
 
       {isNextMatch && (
@@ -129,15 +129,15 @@ export default function TeamSelector({ teams, teamA, teamB, nextMatch, onSelectA
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <div className="inline-block px-4 py-2 rounded-full bg-nebula-500/10 border border-nebula-500/30">
-            <span className="text-xs text-nebula-300">下一场</span>
-            <span className="text-sm text-white font-medium mx-2">{nextMatch.round}</span>
-            <span className="text-xs text-gray-400">{nextMatch.date} {nextMatch.time}</span>
+          <div className="inline-block px-3 py-1 md:px-4 md:py-2 rounded-full bg-nebula-500/10 border border-nebula-500/30">
+            <span className="text-[10px] md:text-xs text-nebula-300">下一场</span>
+            <span className="text-xs md:text-sm text-white font-medium mx-1 md:mx-2">{nextMatch.round}</span>
+            <span className="text-[10px] md:text-xs text-gray-400">{nextMatch.date} {nextMatch.time}</span>
           </div>
         </motion.div>
       )}
 
-      <div className="flex flex-col md:flex-row gap-6 items-stretch">
+      <div className="flex gap-2 md:gap-6 items-stretch">
         <TeamPicker
           label="主队"
           selected={teamA}
@@ -146,8 +146,8 @@ export default function TeamSelector({ teams, teamA, teamB, nextMatch, onSelectA
           excludeId={teamB?.id}
         />
 
-        <div className="flex items-center justify-center">
-          <div className="text-3xl text-gold-500 font-bold">VS</div>
+        <div className="flex items-center justify-center shrink-0">
+          <div className="text-xl md:text-3xl text-gold-500 font-bold">VS</div>
         </div>
 
         <TeamPicker
@@ -167,7 +167,7 @@ export default function TeamSelector({ teams, teamA, teamB, nextMatch, onSelectA
         >
           <button
             onClick={onPredict}
-            className="px-8 py-4 bg-gradient-to-r from-nebula-500 via-mystic-500 to-gold-500 rounded-xl text-white font-bold text-lg hover:opacity-90 transition-opacity shadow-lg shadow-nebula-500/30"
+            className="px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-nebula-500 via-mystic-500 to-gold-500 rounded-lg md:rounded-xl text-white font-bold text-base md:text-lg hover:opacity-90 transition-opacity shadow-lg shadow-nebula-500/30 active:opacity-80"
           >
             🔮 开启天机推演
           </button>

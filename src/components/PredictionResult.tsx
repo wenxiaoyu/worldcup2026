@@ -20,10 +20,10 @@ export default function PredictionResult({ teamA, teamB, result, onReset }: Prop
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6"
+      className="space-y-3 md:space-y-6"
     >
-      <div className="text-center mb-4">
-        <div className="flex items-center justify-center gap-4 text-3xl mb-2">
+      <div className="text-center mb-2 md:mb-4">
+        <div className="flex items-center justify-center gap-3 md:gap-4 text-2xl md:text-3xl mb-1 md:mb-2">
           <span>{teamA.flag}</span>
           <span className="text-gold-400 font-bold">{teamA.name}</span>
           <span className="text-nebula-300 text-xl">VS</span>
@@ -34,7 +34,7 @@ export default function PredictionResult({ teamA, teamB, result, onReset }: Prop
 
       <FinalScore teamA={teamA} teamB={teamB} result={result} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
         <AstrologyEngine result={result.astrology} teamA={teamA} teamB={teamB} />
         <WuxingEngine result={result.wuxing} teamA={teamA} teamB={teamB} />
         <TarotEngine result={result.tarot} />

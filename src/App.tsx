@@ -75,7 +75,7 @@ export default function App() {
     <div className="min-h-screen stars-bg">
       <MysticalBackground />
       <Header />
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-3 py-3 md:px-4 md:py-8 pb-safe">
         {!result && !realMatch && !isRevealing && (
           <TeamSelector
             teams={teams}
