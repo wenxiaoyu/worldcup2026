@@ -83,16 +83,28 @@ function predictScore(indexA: number, indexB: number, odds?: Odds): [number, num
   return generateScoreFromOutcome(outcome, rng)
 }
 
-function predictTop3Scores(indexA: number, indexB: number, seed: string, odds?: Odds): [number, number][] {
-  const { probA, probDraw } = computeProbabilities(indexA, indexB, odds)
+function predictTop3Scores(indexA: number, indexB: number, seed: string, odds?: Odds, rankA?: number, rankB?: number): [number, number][] {
+  const { probA, probDraw, probB } = computeProbabilities(indexA, indexB, odds)
   const results: [number, number][] = []
   const seen = new Set<string>()
+
+  const rankGap = (rankA && rankB) ? Math.abs(rankA - rankB) : 0
+  let adjProbA = probA
+  let adjProbDraw = probDraw
+  if (rankGap > 30) {
+    if (rankA! < rankB!) {
+      adjProbDraw = probDraw + probB
+    } else {
+      adjProbDraw = probDraw + probA
+      adjProbA = 0
+    }
+  }
 
   for (let i = 0; i < 3; i++) {
     const rng = seededRandom(`${seed}:div${i}`)
     const r = rng()
     const outcome: 'A' | 'draw' | 'B' =
-      r < probA ? 'A' : r < probA + probDraw ? 'draw' : 'B'
+      r < adjProbA ? 'A' : r < adjProbA + adjProbDraw ? 'draw' : 'B'
 
     for (let attempt = 0; attempt < 10; attempt++) {
       const score = generateScoreFromOutcome(outcome, rng)
@@ -216,7 +228,7 @@ export function calculateComposite(teamA: Team, teamB: Team, matchTime?: string,
 
   const destinyIndex = Math.abs(teamAFinalScore - teamBFinalScore)
   const predictedScore = predictScore(teamAFinalScore, teamBFinalScore, odds)
-  const predictedScores = predictTop3Scores(teamAFinalScore, teamBFinalScore, seed, odds)
+  const predictedScores = predictTop3Scores(teamAFinalScore, teamBFinalScore, seed, odds, teamA.fifaRanking, teamB.fifaRanking)
 
   let verdict: string
   if (destinyIndex < 5) {
