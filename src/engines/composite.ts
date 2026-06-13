@@ -132,13 +132,22 @@ export function calculateComposite(teamA: Team, teamB: Team, matchTime?: string,
 
   const rankGap = Math.abs(teamA.fifaRanking - teamB.fifaRanking)
   if (rankGap > 5) {
-    const boost = Math.min(12, Math.round((rankGap - 5) * 0.3))
-    if (teamA.fifaRanking < teamB.fifaRanking) {
-      teamAFinalScore += boost
-      teamBFinalScore -= boost
+    if (rankGap > 20) {
+      const betterIsA = teamA.fifaRanking < teamB.fifaRanking
+      const factor = Math.min(0.8, rankGap / 100)
+      const fifaA = betterIsA ? 70 : 30
+      const fifaB = betterIsA ? 30 : 70
+      teamAFinalScore = Math.round(teamAFinalScore * (1 - factor) + fifaA * factor)
+      teamBFinalScore = Math.round(teamBFinalScore * (1 - factor) + fifaB * factor)
     } else {
-      teamBFinalScore += boost
-      teamAFinalScore -= boost
+      const boost = Math.round((rankGap - 5) * 0.8)
+      if (teamA.fifaRanking < teamB.fifaRanking) {
+        teamAFinalScore += boost
+        teamBFinalScore -= boost
+      } else {
+        teamBFinalScore += boost
+        teamAFinalScore -= boost
+      }
     }
     teamAFinalScore = Math.max(10, Math.min(100, teamAFinalScore))
     teamBFinalScore = Math.max(10, Math.min(100, teamBFinalScore))
