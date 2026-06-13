@@ -8,9 +8,10 @@ interface Props {
   result: CompositeResult
 }
 
+const LABELS = ['第一推演', '第二推演', '第三推演']
+
 export default function FinalScore({ teamA, teamB, result }: Props) {
-  const primary = result.predictedScores[0]
-  const alternatives = result.predictedScores.slice(1)
+  const scores = result.predictedScores
 
   return (
     <motion.div
@@ -34,11 +35,11 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
           className="flex items-center gap-3"
         >
           <span className="text-5xl md:text-6xl font-bold text-gold-400 glow-text">
-            {primary[0]}
+            {scores[0][0]}
           </span>
           <span className="text-3xl text-gray-500">:</span>
           <span className="text-5xl md:text-6xl font-bold text-gold-400 glow-text">
-            {primary[1]}
+            {scores[0][1]}
           </span>
         </motion.div>
 
@@ -47,29 +48,6 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
           <div className="text-sm text-gray-400">{teamB.name}</div>
         </div>
       </div>
-
-      {alternatives.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-          className="mb-6"
-        >
-          <p className="text-xs text-gray-500 mb-2">其他天机可能</p>
-          <div className="flex justify-center gap-3">
-            {alternatives.map((score, i) => (
-              <div
-                key={i}
-                className="px-4 py-2 bg-cosmic-700/50 rounded-lg border border-cosmic-600"
-              >
-                <span className="text-lg font-bold text-nebula-300">{score[0]}</span>
-                <span className="text-sm text-gray-500 mx-1">:</span>
-                <span className="text-lg font-bold text-nebula-300">{score[1]}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
 
       <div className="mb-4">
         <div className="flex justify-between text-xs text-gray-500 mb-1">
@@ -96,10 +74,56 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
-        className="text-lg text-gold-300 font-bold"
+        className="text-lg text-gold-300 font-bold mb-6"
       >
         {result.verdict}
       </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.0 }}
+      >
+        <div className="text-xs text-gray-500 mb-3 tracking-wide">天机三式 · 比分推演</div>
+        <div className="grid grid-cols-3 gap-3">
+          {scores.map((score, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.1 + i * 0.15 }}
+              className={`rounded-xl p-3 border ${
+                i === 0
+                  ? 'bg-gold-500/10 border-gold-500/30 shadow-lg shadow-gold-500/10'
+                  : 'bg-cosmic-700/50 border-cosmic-600'
+              }`}
+            >
+              <div className={`text-[10px] mb-2 font-medium ${
+                i === 0 ? 'text-gold-400' : 'text-gray-500'
+              }`}>
+                {LABELS[i]}
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-xs text-gray-400">{teamA.flag}</span>
+                <span className={`text-2xl font-bold ${
+                  i === 0 ? 'text-gold-400' : 'text-nebula-300'
+                }`}>
+                  {score[0]}
+                </span>
+                <span className={`text-sm ${
+                  i === 0 ? 'text-gold-500/60' : 'text-gray-600'
+                }`}>:</span>
+                <span className={`text-2xl font-bold ${
+                  i === 0 ? 'text-gold-400' : 'text-nebula-300'
+                }`}>
+                  {score[1]}
+                </span>
+                <span className="text-xs text-gray-400">{teamB.flag}</span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </motion.div>
   )
 }
