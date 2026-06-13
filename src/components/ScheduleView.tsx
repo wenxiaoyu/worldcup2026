@@ -54,6 +54,14 @@ export default function ScheduleView({ matches, onMatchClick }: Props) {
     return Array.from(map.entries())
   }, [filtered])
 
+  const nextMatchDate = useMemo(() => {
+    const upcoming = filtered
+      .filter(e => !e.match.score?.ft)
+      .map(e => e.bjDate)
+      .sort()
+    return upcoming[0] ?? null
+  }, [filtered])
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -85,15 +93,15 @@ export default function ScheduleView({ matches, onMatchClick }: Props) {
       {grouped.map(([date, dayEntries]) => (
         <div key={date}>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className={`text-xs font-medium ${date === today ? 'text-gold-400' : 'text-gray-500'}`}>
-              {date}{date === today ? ' 今天' : ''}
+            <span className={`text-xs font-medium ${date === nextMatchDate ? 'text-gold-400' : 'text-gray-500'}`}>
+              {date}{date === today ? ' 今天' : date === nextMatchDate ? ' 下一轮' : ''}
             </span>
             <div className="flex-1 h-px bg-cosmic-700" />
           </div>
           <div className="space-y-1">
             {dayEntries.map(({ match: m, bjTime }, i) => {
               const hasScore = !!m.score?.ft
-              const isLive = date === today && !hasScore
+              const isLive = date === nextMatchDate && !hasScore
               const clickable = !hasScore && onMatchClick
               return (
                 <div
