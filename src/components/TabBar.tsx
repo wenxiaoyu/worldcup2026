@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion'
 
 const TABS = [
-  { key: 'predict', label: '天机推演' },
   { key: 'schedule', label: '赛程' },
   { key: 'standings', label: '积分榜' },
+  { key: 'predict', label: '天机推演' },
 ]
 
 interface Props {

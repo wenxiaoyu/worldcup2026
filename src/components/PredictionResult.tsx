@@ -41,6 +41,19 @@ export default function PredictionResult({ teamA, teamB, result, onReset }: Prop
         <NumerologyEngine result={result.numerology} teamA={teamA} teamB={teamB} />
       </div>
 
+      <div className="bg-cosmic-800/40 border border-cosmic-700/30 rounded-xl p-3 md:p-4 space-y-1.5">
+        <div className="flex items-center gap-1.5 text-xs text-gold-500/80 font-medium">
+          <span>⚠</span>
+          <span>娱乐风险提示</span>
+        </div>
+        <p className="text-[11px] text-gray-500 leading-relaxed">
+          本推演结果基于星象、五行、塔罗、命理等玄学模型随机生成，仅供娱乐参考，不构成任何投注建议或赛事预测。所有"赔率"数据由用户自行输入，系统仅将其作为推演参数之一，不保证与实际赛果有任何关联。请理性对待，切勿沉迷，量力而行。
+        </p>
+        <p className="text-[10px] text-gray-600">
+          免责声明：使用本工具产生的一切决策与后果由用户自行承担，开发者不对任何因参考本推演结果而产生的损失负责。
+        </p>
+      </div>
+
       <div className="text-center pt-4">
         <button
           onClick={onReset}

@@ -124,16 +124,18 @@ export default function ScheduleView({ matches, onMatchClick }: Props) {
                         {m.score!.ft[0]} - {m.score!.ft[1]}
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-600">vs</span>
+                      <span className="text-xs text-nebula-400/60">🔮</span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0 flex items-center gap-1.5 justify-end">
                     <span className="text-sm truncate text-right">{findLocalName(m.team2)}</span>
                     <span className="text-base">{findFlag(m.team2)}</span>
                   </div>
-                  {m.group && (
+                  {clickable ? (
+                    <span className="shrink-0 text-[10px] text-nebula-400/50">推演</span>
+                  ) : m.group ? (
                     <span className="shrink-0 text-[10px] text-gray-600 w-6 text-center">{getGroupLabel(m)}</span>
-                  )}
+                  ) : null}
                 </div>
               )
             })}

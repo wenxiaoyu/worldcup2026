@@ -35,19 +35,12 @@ body {
 
 .stars-bg {
   background:
-    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(99, 102, 241, 0.1), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(139, 92, 246, 0.08), transparent),
-    radial-gradient(ellipse 50% 30% at 50% 80%, rgba(245, 158, 11, 0.05), transparent),
-    radial-gradient(2px 2px at 20px 30px, #ffffff30, transparent),
-    radial-gradient(2px 2px at 40px 70px, #ffffff20, transparent),
-    radial-gradient(1px 1px at 90px 40px, #ffffff28, transparent),
-    radial-gradient(1px 1px at 130px 80px, #ffffff18, transparent),
-    radial-gradient(2px 2px at 160px 30px, #ffffff15, transparent),
-    radial-gradient(1.5px 1.5px at 60px 55px, #a5b4fc40, transparent),
-    radial-gradient(1.5px 1.5px at 110px 15px, #fbbf2430, transparent),
-    radial-gradient(1px 1px at 180px 65px, #a78bfa35, transparent);
-  background-size: 200px 100px;
-  animation: twinkle 4s ease-in-out infinite alternate;
+    radial-gradient(1.5px 1.5px at 25px 35px, #ffffff25, transparent),
+    radial-gradient(1px 1px at 80px 60px, #ffffff18, transparent),
+    radial-gradient(1.5px 1.5px at 150px 20px, #a5b4fc20, transparent),
+    radial-gradient(1px 1px at 60px 90px, #ffffff15, transparent),
+    radial-gradient(1px 1px at 190px 70px, #fbbf2415, transparent);
+  background-size: 220px 120px;
   position: relative;
 }
 
@@ -56,12 +49,10 @@ body {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 100% 60% at 30% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 70%),
-    radial-gradient(ellipse 80% 50% at 75% 85%, rgba(139, 92, 246, 0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse 80% 50% at 25% 15%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
-  animation: nebula-drift 20s ease-in-out infinite alternate;
 }
 
 .stars-bg::after {
@@ -70,29 +61,18 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: min(60vw, 500px);
-  opacity: 0.025;
+  font-size: min(50vw, 400px);
+  opacity: 0.015;
   pointer-events: none;
   z-index: 0;
-  filter: blur(1px);
-  text-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
-  animation: spin-slow 120s linear infinite;
+  filter: blur(2px);
+  text-shadow: 0 0 60px rgba(99, 102, 241, 0.2);
+  animation: spin-slow 180s linear infinite;
 }
 
 .stars-bg > * {
   position: relative;
   z-index: 1;
-}
-
-@keyframes nebula-drift {
-  0% { opacity: 0.8; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-  100% { opacity: 0.8; transform: scale(1); }
-}
-
-@keyframes twinkle {
-  from { opacity: 0.7; }
-  to { opacity: 1; }
 }
 
 @keyframes float {
@@ -111,6 +91,24 @@ body {
 
 .spin-slow {
   animation: spin-slow 20s linear infinite;
+}
+
+@keyframes spin-inline {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-inline {
+  animation: spin-inline 6s linear infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { text-shadow: 0 0 20px rgba(165, 180, 252, 0.3); }
+  50% { text-shadow: 0 0 40px rgba(165, 180, 252, 0.6), 0 0 60px rgba(99, 102, 241, 0.2); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
 .glow-text {

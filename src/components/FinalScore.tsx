@@ -131,20 +131,27 @@ export default function FinalScore({ teamA, teamB, result }: Props) {
         transition={{ delay: 1.5 }}
         className="mt-4 md:mt-6 pt-4 border-t border-cosmic-700/50"
       >
-        <div className="text-[10px] md:text-xs text-gray-600 mb-2">玄学参考赔率（仅供娱乐）</div>
+        <div className="text-[10px] md:text-xs text-gray-600 mb-2">{result.userOdds ? '盘口赔率（已纳入推演）' : '玄学参考赔率（仅供娱乐）'}</div>
         {(() => {
-          const total = result.teamAFinalScore + result.teamBFinalScore
-          const rawA = result.teamAFinalScore / total
-          const rawB = result.teamBFinalScore / total
-          const diff = Math.abs(rawA - rawB)
-          const drawProb = Math.max(0.12, 0.32 - diff * 0.8)
-          const remaining = 1 - drawProb
-          const probA = rawA / (rawA + rawB) * remaining
-          const probB = rawB / (rawA + rawB) * remaining
-          const margin = 1.08
-          const oddsA = (margin / probA).toFixed(2)
-          const oddsDraw = (margin / drawProb).toFixed(2)
-          const oddsB = (margin / probB).toFixed(2)
+          let oddsA: string, oddsDraw: string, oddsB: string
+          if (result.userOdds) {
+            oddsA = result.userOdds.home.toFixed(2)
+            oddsDraw = result.userOdds.draw.toFixed(2)
+            oddsB = result.userOdds.away.toFixed(2)
+          } else {
+            const total = result.teamAFinalScore + result.teamBFinalScore
+            const rawA = result.teamAFinalScore / total
+            const rawB = result.teamBFinalScore / total
+            const diff = Math.abs(rawA - rawB)
+            const drawProb = Math.max(0.12, 0.32 - diff * 0.8)
+            const remaining = 1 - drawProb
+            const probA = rawA / (rawA + rawB) * remaining
+            const probB = rawB / (rawA + rawB) * remaining
+            const margin = 1.08
+            oddsA = (margin / probA).toFixed(2)
+            oddsDraw = (margin / drawProb).toFixed(2)
+            oddsB = (margin / probB).toFixed(2)
+          }
           return (
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-cosmic-700/30 rounded-lg py-2 px-1">

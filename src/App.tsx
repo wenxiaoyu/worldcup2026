@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Team, teams } from './data/teams'
-import { calculateComposite, CompositeResult } from './engines/composite'
+import { calculateComposite, CompositeResult, Odds } from './engines/composite'
 import { fetchWorldCupMatches, findMatch, findNextMatch, findLocalTeam, namesMatch, Match } from './services/matchData'
 import Header from './components/Header'
 import TabBar from './components/TabBar'
@@ -12,7 +12,7 @@ import StandingsView from './components/StandingsView'
 import MysticalBackground from './components/MysticalBackground'
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('predict')
+  const [activeTab, setActiveTab] = useState('schedule')
   const [teamA, setTeamA] = useState<Team | null>(null)
   const [teamB, setTeamB] = useState<Team | null>(null)
   const [result, setResult] = useState<CompositeResult | null>(null)
@@ -20,6 +20,8 @@ export default function App() {
   const [isRevealing, setIsRevealing] = useState(false)
   const [nextMatch, setNextMatch] = useState<Match | null>(null)
   const [matches, setMatches] = useState<Match[]>([])
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null)
+  const [odds, setOdds] = useState<{ home: string; draw: string; away: string }>({ home: '', draw: '', away: '' })
 
   useEffect(() => {
     fetchWorldCupMatches().then(data => {
@@ -32,6 +34,7 @@ export default function App() {
       if (a && b) {
         setTeamA(a)
         setTeamB(b)
+        setSelectedMatch(next)
       }
     })
   }, [])
@@ -60,7 +63,11 @@ export default function App() {
           (namesMatch(teamA.nameEn, nextMatch.team2) && namesMatch(teamB.nameEn, nextMatch.team1))
         )
         const matchTime = isNext ? `${nextMatch!.date} ${nextMatch!.time}` : undefined
-        const prediction = calculateComposite(teamA, teamB, matchTime)
+        const h = parseFloat(odds.home)
+        const d = parseFloat(odds.draw)
+        const a = parseFloat(odds.away)
+        const parsedOdds: Odds | undefined = (h > 1 && d > 1 && a > 1) ? { home: h, draw: d, away: a } : undefined
+        const prediction = calculateComposite(teamA, teamB, matchTime, parsedOdds)
         setResult(prediction)
       } catch (e) {
         console.error('推演失败:', e)
@@ -77,8 +84,13 @@ export default function App() {
       setTeamB(b)
       setResult(null)
       setRealMatch(null)
+      setSelectedMatch(match)
       setActiveTab('predict')
     }
+  }
+
+  const handleOddsChange = (field: 'home' | 'draw' | 'away', value: string) => {
+    setOdds(prev => ({ ...prev, [field]: value }))
   }
 
   const handleReset = () => {
@@ -86,6 +98,9 @@ export default function App() {
     setTeamB(null)
     setResult(null)
     setRealMatch(null)
+    setSelectedMatch(null)
+    setOdds({ home: '', draw: '', away: '' })
+    setActiveTab('schedule')
   }
 
   return (
@@ -101,16 +116,27 @@ export default function App() {
                 teamA={teamA}
                 teamB={teamB}
                 nextMatch={nextMatch}
+                selectedMatch={selectedMatch}
+                odds={odds}
+                onOddsChange={handleOddsChange}
                 onPredict={handlePredict}
                 onGoToSchedule={() => setActiveTab('schedule')}
               />
             )}
 
             {isRevealing && (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="text-6xl spin-slow mb-8">☯</div>
-                <p className="text-xl text-nebula-300 animate-pulse">气运流转，卦象推演中...</p>
-                <p className="text-sm text-gray-500 mt-2">观星象 · 演五行 · 翻塔罗 · 起六爻</p>
+              <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+                <div className="text-7xl md:text-8xl spin-inline mb-8 pulse-glow">☯</div>
+                <p className="text-lg md:text-xl text-nebula-300 animate-pulse font-medium">气运流转，卦象推演中...</p>
+                <div className="flex items-center gap-3 mt-4 text-sm text-gray-500">
+                  <span className="animate-pulse" style={{ animationDelay: '0s' }}>观星象</span>
+                  <span className="text-cosmic-600">·</span>
+                  <span className="animate-pulse" style={{ animationDelay: '0.3s' }}>演五行</span>
+                  <span className="text-cosmic-600">·</span>
+                  <span className="animate-pulse" style={{ animationDelay: '0.6s' }}>翻塔罗</span>
+                  <span className="text-cosmic-600">·</span>
+                  <span className="animate-pulse" style={{ animationDelay: '0.9s' }}>起六爻</span>
+                </div>
               </div>
             )}
 
