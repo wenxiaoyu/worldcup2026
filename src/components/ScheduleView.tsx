@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Match, namesMatch, toBeijingTime } from '../services/matchData'
+import { Match, namesMatch, toBeijingDateTime, adjustDate } from '../services/matchData'
 import { teams as localTeams, groups } from '../data/teams'
 
 interface Props {
@@ -29,20 +29,26 @@ export default function ScheduleView({ matches }: Props) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
   }, [])
 
+  const enriched = useMemo(() =>
+    matches.map(m => {
+      const bj = toBeijingDateTime(m.time)
+      return { match: m, bjTime: bj.time, bjDate: adjustDate(m.date, bj.dateShift) }
+    }), [matches])
+
   const filtered = useMemo(() => {
-    let list = matches
+    let list = enriched
     if (filterGroup !== 'all') {
-      list = list.filter(m => getGroupLabel(m) === filterGroup)
+      list = list.filter(e => getGroupLabel(e.match) === filterGroup)
     }
-    return list.sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
-  }, [matches, filterGroup])
+    return list.sort((a, b) => a.bjDate.localeCompare(b.bjDate) || a.bjTime.localeCompare(b.bjTime))
+  }, [enriched, filterGroup])
 
   const grouped = useMemo(() => {
-    const map = new Map<string, Match[]>()
-    for (const m of filtered) {
-      const arr = map.get(m.date) ?? []
-      arr.push(m)
-      map.set(m.date, arr)
+    const map = new Map<string, typeof filtered>()
+    for (const e of filtered) {
+      const arr = map.get(e.bjDate) ?? []
+      arr.push(e)
+      map.set(e.bjDate, arr)
     }
     return Array.from(map.entries())
   }, [filtered])
@@ -75,7 +81,7 @@ export default function ScheduleView({ matches }: Props) {
         ))}
       </div>
 
-      {grouped.map(([date, dayMatches]) => (
+      {grouped.map(([date, dayEntries]) => (
         <div key={date}>
           <div className="flex items-center gap-2 mb-1.5">
             <span className={`text-xs font-medium ${date === today ? 'text-gold-400' : 'text-gray-500'}`}>
@@ -84,9 +90,9 @@ export default function ScheduleView({ matches }: Props) {
             <div className="flex-1 h-px bg-cosmic-700" />
           </div>
           <div className="space-y-1">
-            {dayMatches.map((m, i) => {
+            {dayEntries.map(({ match: m, bjTime }, i) => {
               const hasScore = !!m.score?.ft
-              const isToday = m.date === today
+              const isToday = date === today
               return (
                 <div
                   key={i}
@@ -95,7 +101,7 @@ export default function ScheduleView({ matches }: Props) {
                   }`}
                 >
                   <div className="w-12 shrink-0 text-center">
-                    <div className="text-[10px] text-gray-500">{toBeijingTime(m.time)}</div>
+                    <div className="text-[10px] text-gray-500">{bjTime}</div>
                   </div>
                   <div className="flex-1 min-w-0 flex items-center gap-1.5">
                     <span className="text-base">{findFlag(m.team1)}</span>

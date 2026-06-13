@@ -87,10 +87,21 @@ export function getMatchScoreForTeams(match: Match, teamANameEn: string): [numbe
 
 export function findNextMatch(matches: Match[]): Match | null {
   const now = new Date()
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+  const bjToday = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
   return matches
-    .filter(m => !m.score?.ft && m.date >= today)
-    .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))[0] ?? null
+    .filter(m => {
+      if (m.score?.ft) return false
+      const bj = toBeijingDateTime(m.time)
+      const bjDate = adjustDate(m.date, bj.dateShift)
+      return bjDate >= bjToday
+    })
+    .sort((a, b) => {
+      const bjA = toBeijingDateTime(a.time)
+      const bjB = toBeijingDateTime(b.time)
+      const dateA = adjustDate(a.date, bjA.dateShift)
+      const dateB = adjustDate(b.date, bjB.dateShift)
+      return dateA.localeCompare(dateB) || bjA.time.localeCompare(bjB.time)
+    })[0] ?? null
 }
 
 export function findLocalTeam(jsonTeamName: string, localTeams: { nameEn: string }[]): { nameEn: string } | null {
@@ -98,13 +109,29 @@ export function findLocalTeam(jsonTeamName: string, localTeams: { nameEn: string
 }
 
 export function toBeijingTime(timeStr: string): string {
+  return toBeijingDateTime(timeStr).time
+}
+
+export function toBeijingDateTime(timeStr: string): { time: string; dateShift: number } {
   const match = timeStr.match(/(\d{1,2}):(\d{2})\s*UTC([+-]\d{1,2})/)
-  if (!match) return timeStr
+  if (!match) return { time: timeStr, dateShift: 0 }
   const hours = parseInt(match[1])
   const minutes = parseInt(match[2])
   const utcOffset = parseInt(match[3])
   const totalMinutes = hours * 60 + minutes - utcOffset * 60 + 8 * 60
-  const bjHours = ((totalMinutes / 60) % 24 + 24) % 24
-  const bjMinutes = totalMinutes % 60
-  return `${String(Math.floor(bjHours)).padStart(2, '0')}:${String(Math.abs(bjMinutes)).padStart(2, '0')}`
+  const dateShift = Math.floor(totalMinutes / 1440)
+  const dayMinutes = ((totalMinutes % 1440) + 1440) % 1440
+  const bjHours = Math.floor(dayMinutes / 60)
+  const bjMinutes = dayMinutes % 60
+  return {
+    time: `${String(bjHours).padStart(2, '0')}:${String(bjMinutes).padStart(2, '0')}`,
+    dateShift,
+  }
+}
+
+export function adjustDate(date: string, shift: number): string {
+  if (shift === 0) return date
+  const d = new Date(date + 'T00:00:00')
+  d.setDate(d.getDate() + shift)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Team } from '../data/teams'
-import { Match, namesMatch, toBeijingTime } from '../services/matchData'
+import { Match, namesMatch, toBeijingDateTime, adjustDate } from '../services/matchData'
 
 interface Props {
   teams: Team[]
@@ -132,7 +132,10 @@ export default function TeamSelector({ teams, teamA, teamB, nextMatch, onSelectA
           <div className="inline-block px-3 py-1 md:px-4 md:py-2 rounded-full bg-nebula-500/10 border border-nebula-500/30">
             <span className="text-[10px] md:text-xs text-nebula-300">下一场</span>
             <span className="text-xs md:text-sm text-white font-medium mx-1 md:mx-2">{nextMatch.round}</span>
-            <span className="text-[10px] md:text-xs text-gray-400">{nextMatch.date} {toBeijingTime(nextMatch.time)}</span>
+            <span className="text-[10px] md:text-xs text-gray-400">{(() => {
+              const bj = toBeijingDateTime(nextMatch.time)
+              return `${adjustDate(nextMatch.date, bj.dateShift)} ${bj.time}`
+            })()}</span>
           </div>
         </motion.div>
       )}
