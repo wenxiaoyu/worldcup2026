@@ -98,13 +98,11 @@ export default function App() {
           <>
             {!result && !realMatch && !isRevealing && (
               <TeamSelector
-                teams={teams}
                 teamA={teamA}
                 teamB={teamB}
                 nextMatch={nextMatch}
-                onSelectA={setTeamA}
-                onSelectB={setTeamB}
                 onPredict={handlePredict}
+                onGoToSchedule={() => setActiveTab('schedule')}
               />
             )}
 
